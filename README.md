@@ -22,4 +22,4 @@ simple but useful cake-like visual metaphor. Users can
 interact with clusters and select individual clusters for
 investigation.
 
-[The corresponding Paper:](https://dbs.uni-leipzig.de/file/edbt-demopaper.pdf)
+[The corresponding Paper:](https://dbs.uni-leipzig.de/file/edbt-demopaper.pdf EDBT2018)
