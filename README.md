@@ -21,3 +21,5 @@ with their type and similarity are visualized by using a
 simple but useful cake-like visual metaphor. Users can
 interact with clusters and select individual clusters for
 investigation.
+
+[The corresponding Paper:](https://dbs.uni-leipzig.de/file/edbt-demopaper.pdf)
