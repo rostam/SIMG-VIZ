@@ -15,9 +15,31 @@
             width: 100%;
             height: 100%;
         }
+
+        div.sticky {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            /*background-color: lightgray;*/
+            /*border-style: solid;*/
+            padding: 20px;
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
+<div class="sticky">
+    <label for="Category">Category:</label>
+    <input id="Category" value="g1">
+    <label for="Graph">Graph:</label>
+    <input id="Graph" value="Center">
+    <label for="ClusterId">Cluster Id:</label>
+    <input id="ClusterId" value="88">
+    <button id="go">Go</button>
+    <!--<select id="Graph">-->
+        <!--<option value="G1">G1</option>-->
+    <!--</select>-->
+</div>
 <div id="canvas"></div>
 <script>
     var serverAddr = "http://localhost:2342/";
@@ -519,11 +541,18 @@
     }
 
     cy = buildCytoscape();
-    $.post(serverAddr + 'test/').done(function (data) {
-        drawGraph(data,function () {
-            cy.fit(cy.elements(), 40)
+    document.getElementById("go").onclick = function () {
+        var cat = document.getElementById("Category").value;
+        var graph = document.getElementById("Graph").value;
+        var cid = document.getElementById("ClusterId").value;
+
+        $.post(serverAddr + 'test/' + cat+"--"+graph+"--"+cid).done(function (data) {
+            drawGraph(data,function () {
+                cy.fit(cy.elements(), 40)
+            });
         });
-    });
+    };
+
 </script>
 </body>
 </html>

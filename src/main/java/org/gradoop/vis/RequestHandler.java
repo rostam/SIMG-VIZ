@@ -26,9 +26,7 @@ import org.gradoop.flink.util.GradoopFlinkConfig;
 import org.gradoop.vis.cluster.FilterAClusterAndItsNeighbors;
 import org.gradoop.vis.layout.ToSGraph;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,14 +47,15 @@ public class RequestHandler {
      * @return a list of all available sampling methods.
      */
     @POST
-    @Path("/test")
+    @Path("/test/{databaseName}")
     @Produces("application/json;charset=utf-8")
-    public Response test() throws Exception {
+    public Response test(@PathParam("databaseName") String databaseName) throws Exception {
+        String[] data = databaseName.split("--");
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
         GradoopFlinkConfig gfc = GradoopFlinkConfig.createConfig(env);
         String dataPath = RequestHandler.class.getResource("/data/").getPath().toString();
-        LogicalGraph g = new JSONDataSource(dataPath + "g1/Center", gfc).getLogicalGraph();
-        g = new FilterAClusterAndItsNeighbors("88").execute(g);
+        LogicalGraph g = new JSONDataSource(dataPath + data[0] + "/" + data[1], gfc).getLogicalGraph();
+        g = new FilterAClusterAndItsNeighbors(data[2]).execute(g);
         List<GraphHead> ghead = new ArrayList<>();
         List<Vertex> lv = new ArrayList<>();
         List<Edge> le = new ArrayList<>();
@@ -68,4 +67,26 @@ public class RequestHandler {
         String json = CytoJSONBuilder.getJSON(ghead.get(0), lv, le);
         return Response.ok(json).header("Access-Control-Allow-Origin", "*").build();
     }
+
+//
+//    @POST
+//    @Path("/clusterids")
+//    @Produces("application/json;charset=utf-8")
+//    public Response clusterids() throws Exception {
+//        ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+//        GradoopFlinkConfig gfc = GradoopFlinkConfig.createConfig(env);
+//        String dataPath = RequestHandler.class.getResource("/data/").getPath().toString();
+//        LogicalGraph g = new JSONDataSource(dataPath + "g1/Center", gfc).getLogicalGraph();
+//        g = new FilterAClusterAndItsNeighbors("88").execute(g);
+//        List<GraphHead> ghead = new ArrayList<>();
+//        List<Vertex> lv = new ArrayList<>();
+//        List<Edge> le = new ArrayList<>();
+//        g.getGraphHead().output(new LocalCollectionOutputFormat<>(ghead));
+//        g.getVertices().output(new LocalCollectionOutputFormat<>(lv));
+//        g.getEdges().output(new LocalCollectionOutputFormat<>(le));
+//        env.execute();
+//        new ToSGraph(lv,le).forceDirectedCluster(100);
+//        String json = CytoJSONBuilder.getJSON(ghead.get(0), lv, le);
+//        return Response.ok(json).header("Access-Control-Allow-Origin", "*").build();
+//    }
 }
