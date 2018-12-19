@@ -369,7 +369,7 @@
             fit: true,
 
             // padding on fit
-            padding: 30,
+            padding: 100,
 
             // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
             boundingBox: undefined,
@@ -521,7 +521,7 @@
     cy = buildCytoscape();
     $.post(serverAddr + 'test/').done(function (data) {
         drawGraph(data,function () {
-
+            cy.fit(cy.elements(), 40)
         });
     });
 </script>

@@ -43,7 +43,6 @@ public class RequestHandler {
 
     private static final ExecutionEnvironment ENV = ExecutionEnvironment.createLocalEnvironment();
     private GradoopFlinkConfig config = GradoopFlinkConfig.createConfig(ENV);
-
     /**
      * Creates a list of all available sampling methods.
      *
@@ -55,9 +54,9 @@ public class RequestHandler {
     public Response test() throws Exception {
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
         GradoopFlinkConfig gfc = GradoopFlinkConfig.createConfig(env);
-//        LogicalGraph g = new CSVDataSource("/home/rostam/kara/gradoop-vis/src/main/resources/data/Samples/Example", gfc).getLogicalGraph();
-        LogicalGraph g = new JSONDataSource("/home/rostam/kara/gradoop-vis-final/src/main/resources/data/g1/Center", gfc).getLogicalGraph();
-        g = new FilterAClusterAndItsNeighbors("60").execute(g);
+        String dataPath = RequestHandler.class.getResource("/data/").getPath().toString();
+        LogicalGraph g = new JSONDataSource(dataPath + "g1/Center", gfc).getLogicalGraph();
+        g = new FilterAClusterAndItsNeighbors("88").execute(g);
         List<GraphHead> ghead = new ArrayList<>();
         List<Vertex> lv = new ArrayList<>();
         List<Edge> le = new ArrayList<>();
