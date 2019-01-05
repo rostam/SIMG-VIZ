@@ -23,6 +23,6 @@ interact with clusters and select individual clusters for
 investigation.
 
 ## Usage
-The input graph for this software is similar to input graph of[Gradoop](https://github.com/dbs-leipzig/gradoop). An assumption is that each vertex has the property "ClusterId" which shows to which cluster that vertex belongs. This property can contain several cluster ids separated by a comma. To use the software, you need first to copy your data into the directory "src/main/resources/data" under an existing folder (called category) or a new folder. After updating the maven, the software can be run just by running the Server class.
+Based on Flink, this software extracts and visualizes a cluster or a cluster together with is neighboring clusters from a large graph. The input graph for this software is similar to input graph of [Gradoop](https://github.com/dbs-leipzig/gradoop). An assumption is that each vertex has the property "ClusterId" which shows to which cluster that vertex belongs. This property can contain several cluster ids separated by a comma. To use the software, you need first to copy your data into the directory "src/main/resources/data" under an existing folder (called category) or a new folder. After updating the maven, the software can be run just by running the Server class. 
 
 [The corresponding Paper:](https://dbs.uni-leipzig.de/file/edbt-demopaper.pdf EDBT2018)
