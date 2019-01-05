@@ -6,30 +6,36 @@
     <script src="jquery-3.1.1.min.js"></script>
     <script src="cytoscape.min.js"></script>
     <link href="index.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+          integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" type="text/css" href="jquery.qtip.css">
     <script src="jquery.qtip.min.js"></script>
     <script src="cytoscape-qtip.js"></script>
 </head>
 <body>
-<div class="w3-sidebar w3-light-grey w3-bar-block" style="width:15%">
-    <h4 class="w3-bar-item">SIMG-VIZ</h4>
+<div class="w3-sidebar w3-light-grey w3-bar-block" style="width:18%">
+    <h4 class="w3-bar-item">
+        SIMG-VIZ
+        <i class='fa fa-spinner fa-spin fa-1x' id="loading"></i>
+    </h4>
     <div class="w3-bar-item">
-    <label for="Category">Category:</label>
-    <select id="Category" value="g1"><option>Select</option></select>
+        <label for="Category">Category:</label>
+        <select id="Category" value="g1">
+            <option>Select</option>
+        </select>
     </div>
     <div class="w3-bar-item">
-    <label for="Graph">Graph:</label>
-    <select id="Graph" value="Center"></select>
+        <label for="Graph">Graph:</label>
+        <select id="Graph" value="Center"></select>
     </div>
     <div class="w3-bar-item">
-    <label for="ClusterId">Cluster Id:</label>
-    <select id="ClusterId" value="88"></select><br/>
+        <label for="ClusterId">Cluster Id:</label>
+        <select id="ClusterId" value="88"></select><br/>
     </div>
     <div class="w3-bar-item">
-    <button id="go">Go</button>
-    <i class='fa fa-spinner fa-spin fa-1x' id="loading"></i>
+        <button class="w3-button w3-white w3-border" id="go-only-cluster">Show Cluster</button>
+        <button class="w3-button w3-white w3-border" id="go">Show Cluster and its Neighbors</button>
     </div>
 </div>
 </div>

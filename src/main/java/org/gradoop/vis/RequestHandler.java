@@ -29,6 +29,7 @@ import org.gradoop.common.model.impl.pojo.Vertex;
 import org.gradoop.flink.io.impl.deprecated.json.JSONDataSource;
 import org.gradoop.flink.model.impl.epgm.LogicalGraph;
 import org.gradoop.flink.util.GradoopFlinkConfig;
+import org.gradoop.vis.cluster.FilterACluster;
 import org.gradoop.vis.cluster.FilterAClusterAndItsNeighbors;
 import org.gradoop.vis.layout.ToSGraph;
 
@@ -49,19 +50,35 @@ public class RequestHandler {
 
     private static final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment();
     private GradoopFlinkConfig gfc = GradoopFlinkConfig.createConfig(env);
-    /**
-     * Creates a list of all available sampling methods.
-     *
-     * @return a list of all available sampling methods.
-     */
+
     @POST
-    @Path("/test/{databaseName}")
+    @Path("/clusterandns/{databaseName}")
     @Produces("application/json;charset=utf-8")
-    public Response test(@PathParam("databaseName") String databaseName) throws Exception {
+    public Response clusterandns(@PathParam("databaseName") String databaseName) throws Exception {
         String[] data = databaseName.split("--");
         String dataPath = RequestHandler.class.getResource("/data/").getPath().toString();
         LogicalGraph g = new JSONDataSource(dataPath + data[0] + "/" + data[1], gfc).getLogicalGraph();
         g = new FilterAClusterAndItsNeighbors(data[2]).execute(g);
+        List<GraphHead> ghead = new ArrayList<>();
+        List<Vertex> lv = new ArrayList<>();
+        List<Edge> le = new ArrayList<>();
+        g.getGraphHead().output(new LocalCollectionOutputFormat<>(ghead));
+        g.getVertices().output(new LocalCollectionOutputFormat<>(lv));
+        g.getEdges().output(new LocalCollectionOutputFormat<>(le));
+        env.execute();
+        new ToSGraph(lv,le).forceDirectedCluster(100);
+        String json = CytoJSONBuilder.getJSON(ghead.get(0), lv, le);
+        return Response.ok(json).header("Access-Control-Allow-Origin", "*").build();
+    }
+
+    @POST
+    @Path("/cluster/{databaseName}")
+    @Produces("application/json;charset=utf-8")
+    public Response cluster(@PathParam("databaseName") String databaseName) throws Exception {
+        String[] data = databaseName.split("--");
+        String dataPath = RequestHandler.class.getResource("/data/").getPath().toString();
+        LogicalGraph g = new JSONDataSource(dataPath + data[0] + "/" + data[1], gfc).getLogicalGraph();
+        g = new FilterACluster(data[2]).execute(g);
         List<GraphHead> ghead = new ArrayList<>();
         List<Vertex> lv = new ArrayList<>();
         List<Edge> le = new ArrayList<>();

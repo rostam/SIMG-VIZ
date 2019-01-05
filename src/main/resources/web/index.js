@@ -52,7 +52,20 @@ $(document).ready(function () {
         var graph = getSelected("Graph");
         var cid = getSelected("ClusterId");
         $('#loading').show();
-        $.post(serverAddr + 'test/' + cat + "--" + graph + "--" + cid).done(function (data) {
+        $.post(serverAddr + 'clusterandns/' + cat + "--" + graph + "--" + cid).done(function (data) {
+            drawGraph(data, function () {
+                cy.fit(cy.elements(), 40)
+            });
+            $('#loading').hide();
+        });
+    };
+
+    document.getElementById("go-only-cluster").onclick = function () {
+        var cat = getSelected("Category");
+        var graph = getSelected("Graph");
+        var cid = getSelected("ClusterId");
+        $('#loading').show();
+        $.post(serverAddr + 'cluster/' + cat + "--" + graph + "--" + cid).done(function (data) {
             drawGraph(data, function () {
                 cy.fit(cy.elements(), 40)
             });
