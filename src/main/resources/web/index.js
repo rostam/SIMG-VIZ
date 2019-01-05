@@ -13,8 +13,9 @@ function fillMenus(databases) {
     });
     databaseSelect.on('change', function () {
         var graph = getSelected("Graph");
+        var cat = getSelected("Category");
         $('#loading').show();
-        $.post(serverAddr + 'clusterids/' + category + "--" + graph).done(function (data) {
+        $.post(serverAddr + 'clusterids/' + cat + "--" + graph).done(function (data) {
             var clusteridMenu = $('#ClusterId');
             data.forEach(function (d) {
                 clusteridMenu.append('<option>' + d + '</option>');

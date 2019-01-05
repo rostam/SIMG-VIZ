@@ -1,8 +1,0 @@
-hasMember;
-hasTag;
-hasInterest;
-hasModerator;
-knows;since:int
-Forum;title:string
-Tag;name:string
-Person;age:int,city:string,gender:string,locIP:string,name:string,speaks:string

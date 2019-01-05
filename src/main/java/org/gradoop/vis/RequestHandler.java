@@ -26,7 +26,10 @@ import org.codehaus.jettison.json.JSONObject;
 import org.gradoop.common.model.impl.pojo.Edge;
 import org.gradoop.common.model.impl.pojo.GraphHead;
 import org.gradoop.common.model.impl.pojo.Vertex;
+import org.gradoop.flink.io.api.DataSource;
+import org.gradoop.flink.io.impl.csv.CSVDataSource;
 import org.gradoop.flink.io.impl.deprecated.json.JSONDataSource;
+import org.gradoop.flink.io.impl.edgelist.EdgeListDataSource;
 import org.gradoop.flink.model.impl.epgm.LogicalGraph;
 import org.gradoop.flink.util.GradoopFlinkConfig;
 import org.gradoop.vis.cluster.FilterACluster;
@@ -36,6 +39,7 @@ import org.gradoop.vis.layout.ToSGraph;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -130,14 +134,20 @@ public class RequestHandler {
         List<String> clusterids = g.getVertices().map(new MapFunction<Vertex, String>() {
             @Override
             public String map(Vertex vertex) throws Exception {
-                return vertex.getPropertyValue("ClusterId").toString();
+                if(vertex.hasProperty("ClusterId"))
+                    return vertex.getPropertyValue("ClusterId").toString();
+                else return vertex.getLabel();
             }
         }).flatMap(new FlatMapFunction<String, String>() {
             @Override
             public void flatMap(String s, Collector<String> collector) throws Exception {
-                String[] splittedArray = s.split(",");
-                for(String splitted : splittedArray)
-                    collector.collect(splitted);
+                if(s.contains(",")) {
+                    String[] splittedArray = s.split(",");
+                    for (String splitted : splittedArray)
+                        collector.collect(splitted);
+                } else {
+                    collector.collect(s);
+                }
             }
         }).distinct().collect();
         for(String s : clusterids)
@@ -146,9 +156,32 @@ public class RequestHandler {
         return Response.ok(json.toString()).header("Access-Control-Allow-Origin", "*").build();
     }
 
-    private LogicalGraph readGraph(String databaseName, String[] data) {
-        String dataPath = RequestHandler.class.getResource("/data/").getPath().toString();
-        return new JSONDataSource(dataPath + data[0] + "/" + data[1], gfc).getLogicalGraph();
+    private LogicalGraph readGraph(String databaseName, String[] data) throws IOException {
+        String dataPath = RequestHandler.class.getResource("/data/").getPath();
+        String path = dataPath + data[0] + "/" + data[1];
+        System.out.println(path);
+        File[] files = new File(path).listFiles();
+        String format = "";
+        for (File f : files) {
+            if (f.getName().contains(".json")) {
+                format = "json";
+                break;
+            } else if (f.getName().contains(".csv")) {
+                format = "csv";
+                break;
+            }
+        }
+        DataSource source = null;
+        switch (format) {
+            case "json":
+                source = new JSONDataSource(path, gfc);
+                break;
+            case "csv":
+                source = new CSVDataSource(path, gfc);
+                break;
+        }
+
+        return source.getLogicalGraph();
     }
 
 }
