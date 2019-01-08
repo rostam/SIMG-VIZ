@@ -11,7 +11,7 @@ tions.
 * To increase performance, some layouts can be precom-
 puted on the server with either parallel or serial computa-
 tion. This provides a significant optimization potential in
-particular for force-directed layouts [3].
+particular for force-directed layouts.
 * To support visualization of large graphs, preprocessing
 techniques such as sampling (also executed in parallel on
 the server) can be selected to obtain a fast overview of
