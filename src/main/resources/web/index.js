@@ -1,4 +1,5 @@
 $('#loading').hide();
+
 function getSelected(name) {
     return $('#' + name).find('option:selected').text();
 }
@@ -38,8 +39,6 @@ function initializeGraphsMenu(databases) {
 }
 
 var serverAddr = "http://localhost:2342/";
-var fade = false;
-var selectedNode = null;
 
 
 $(document).ready(function () {
@@ -73,6 +72,16 @@ $(document).ready(function () {
             $('#loading').hide();
         });
     };
+
+    $("#ShowVertexLabels").on('change',function () {
+       var showVLabels = getSelected("ShowVertexLabels");
+       if(showVLabels == 'no') cy.nodes().style('label','');
+    });
+
+    $("#ShowEdgeLabels").on('change',function () {
+        var showVLabels = getSelected("ShowEdgeLabels");
+        if(showVLabels == 'no') cy.edges().style('label','');
+    });
 
 });
 

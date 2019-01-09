@@ -526,3 +526,37 @@ function chooseLayout() {
 }
 
 cy = buildCytoscape();
+
+var fade = false;
+var selectedNode = null;
+function fadeUnselected() {
+    // if (fade == false) fade = true;
+    // else fade = false;
+    // if (fade) {
+    cy.elements().unselectify();
+    /* if a vertex is selected, fade all edges and vertices
+     that are not in direct neighborhood of the vertex */
+    cy.on('cxttap', 'node', function (e) {
+        var node = e.cyTarget;
+        selectedNode = node;
+        var neighborhood = node.neighborhood().add(node);
+
+        cy.elements().addClass('faded');
+        neighborhood.removeClass('faded');
+    });
+    // remove fading by clicking somewhere else
+    cy.on('cxttap', function (e) {
+
+        if (e.cyTarget === cy) {
+            cy.elements().removeClass('faded');
+        }
+    });
+    // } else {
+    //     cy.elements().unselectify();
+    //     cy.on('cxttap', 'node', function (e) {
+    //     });
+    //     // remove fading by clicking somewhere else
+    //     cy.on('cxttap', function (e) {
+    //     });
+    // }
+}
