@@ -1,8 +1,8 @@
 package org.gradoop.vis.fd;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class SGraph {
     public List<SVertex> nodes;

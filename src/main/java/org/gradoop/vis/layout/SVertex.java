@@ -1,7 +1,8 @@
 package org.gradoop.vis.layout;
 
-import java.util.*;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 class SVertex {
     private double dispx, dispy;

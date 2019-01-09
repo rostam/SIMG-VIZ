@@ -4,7 +4,6 @@ import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.pojo.Edge;
 import org.gradoop.common.model.impl.pojo.Vertex;
 import org.gradoop.vis.DistinctColors;
-import org.gradoop.vis.layout.*;
 
 import java.util.HashMap;
 import java.util.List;

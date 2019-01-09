@@ -1,11 +1,11 @@
 package org.gradoop.vis.fd;
 
 public class Utils {
-    static public int sign(double d) {
+    static int sign(double d) {
         return (int) (d / Math.abs(d));
     }
 
-    public static void separation(Rect r1, Rect r2, SPoint overlap, double buffer) {
+    static void separation(Rect r1, Rect r2, SPoint overlap, double buffer) {
         double[] directions = new double[2];
         directionsOverlappingNodes(r1, r2, directions);
         overlap.x = Math.min(r1.getRight(), r2.getRight()) - Math.max(r1.x, r2.x);

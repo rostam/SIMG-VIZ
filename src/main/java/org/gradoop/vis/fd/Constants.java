@@ -24,13 +24,13 @@ class Constants
 	static final double MIN_REPULSION_DIST = DEFAULT_EDGE_LEN / 10.0;
 	static final int CONVERGENCE_CHECK_PERIOD = 100;
 	static final int GRID_CALCULATION_CHECK_PERIOD = 10;
-    static int springSt = 50; // 0-100
-    static int repulsionSt = 50; // 0-100
-    static int gravSt = 50; // 0-100
-    static int gravR = 50; // 0-100
-	static int layoutType = Constants.DEFAULT; // proof, default, draft
-	static boolean inc = Constants.DEFAULT_INCREMENTAL; // T-F
-	static boolean uniformLeafNodeSizes = Constants.DEFAULT_UNIFORM_LEAF_NODE_SIZES; // T-F
-	static int idealEdgeLen = Constants.DEFAULT_EDGE_LEN; // any positive int
-	static boolean smartRepulsionRangeCalc = Constants.DEFAULT_USE_SMART_REPULSION_RANGE_CALCULATION; // T-F
+    static int springSt = 50;
+    static int repulsionSt = 50;
+    static int gravSt = 50;
+    static int gravR = 50;
+	static int layoutType = Constants.DEFAULT;
+	static boolean inc = Constants.DEFAULT_INCREMENTAL;
+	static boolean uniformLeafNodeSizes = Constants.DEFAULT_UNIFORM_LEAF_NODE_SIZES;
+	static int idealEdgeLen = Constants.DEFAULT_EDGE_LEN;
+	static boolean smartRepulsionRangeCalc = Constants.DEFAULT_USE_SMART_REPULSION_RANGE_CALCULATION;
 }

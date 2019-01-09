@@ -9,7 +9,7 @@ public class MapEdgeToEdgeVertexProperties implements MapFunction <Tuple3<Edge, 
     private String property;
     MapEdgeToEdgeVertexProperties(String propertyName){ property = propertyName;}
     @Override
-    public Tuple3<Edge, String, String> map(Tuple3<Edge, Vertex, Vertex> value) throws Exception {
+    public Tuple3<Edge, String, String> map(Tuple3<Edge, Vertex, Vertex> value) {
         return Tuple3.of(value.f0, value.f1.getPropertyValue(property).toString(), value.f2.getPropertyValue(property).toString());
     }
 }

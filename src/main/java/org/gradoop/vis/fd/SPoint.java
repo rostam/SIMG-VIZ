@@ -3,8 +3,8 @@ package org.gradoop.vis.fd;
 public class SPoint
 {
 	public double x = 0, y = 0;
-	public SPoint() { }
-	public SPoint(double x, double y)
+	SPoint() { }
+	SPoint(double x, double y)
 	{
 		this.x = x;
 		this.y = y;		

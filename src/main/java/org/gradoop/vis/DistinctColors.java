@@ -8,12 +8,11 @@ import java.util.Vector;
  * 20 distinct colors
  */
 public class DistinctColors {
-    public static LinkedHashMap<String,String> nameToColor = new LinkedHashMap<>();
-    public static Vector<String> colors = new Vector<>();
+    private static LinkedHashMap<String,String> nameToColor = new LinkedHashMap<>();
+    private static Vector<String> colors = new Vector<>();
     static {
         nameToColor.put("Red","#e6194b");
         nameToColor.put("Green","#3cb44b");
-        nameToColor.put("Blue","#0082c8");
         nameToColor.put("Yellow","#ffe119");
         nameToColor.put("Blue","#0082c8");
         nameToColor.put("Orange","#f58231");

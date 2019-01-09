@@ -54,7 +54,7 @@ public class FilterAClusterAndItsNeighbors implements UnaryGraphToGraphOperator 
                             }
                         });
         DataSet<Tuple1<String>> allClusterIds = srcClusterIdTgtClusterId.flatMap(new NeighborIds(clusterId)).distinct(0);
-        DataSet<Tuple2<Vertex, String>> vertexClusterId = graph.getVertices().flatMap(new vertex2vertex_clusterId(true));
+        DataSet<Tuple2<Vertex, String>> vertexClusterId = graph.getVertices().flatMap(new VertexToVertexClusterId(true));
         DataSet<Tuple2<Vertex, String>> vertexGradoopId = vertexClusterId.join(allClusterIds).where(1).equalTo(0)
                 .with(new JoinFunction<Tuple2<Vertex, String>, Tuple1<String>, Vertex>() {
                     @Override

@@ -1,7 +1,6 @@
 package org.gradoop.vis.layout;
 
 import java.util.*;
-import java.util.List;
 
 public class SGraph {
     private List<SVertex> vertices;

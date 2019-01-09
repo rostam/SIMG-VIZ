@@ -6,9 +6,9 @@ import org.apache.flink.util.Collector;
 import org.gradoop.common.model.impl.pojo.Vertex;
 
 
-public class vertex2vertex_clusterId implements FlatMapFunction<Vertex, Tuple2<Vertex, String>> {
+public class VertexToVertexClusterId implements FlatMapFunction<Vertex, Tuple2<Vertex, String>> {
     private Boolean reproduceOverlapped;
-    vertex2vertex_clusterId(Boolean ReproduceOverlapped) {reproduceOverlapped = ReproduceOverlapped;}
+    VertexToVertexClusterId(Boolean ReproduceOverlapped) {reproduceOverlapped = ReproduceOverlapped;}
     @Override
     public void flatMap(Vertex in, Collector<Tuple2<Vertex, String>> out) {
         if (!reproduceOverlapped)

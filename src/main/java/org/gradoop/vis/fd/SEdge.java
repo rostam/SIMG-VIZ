@@ -2,7 +2,7 @@ package org.gradoop.vis.fd;
 
 public class SEdge
 {
-	public double idealLength = Constants.DEFAULT_EDGE_LEN;
+	double idealLength = Constants.DEFAULT_EDGE_LEN;
 	public SVertex source, target;
 	double len, lenX, lenY;
 	public SEdge(SVertex source, SVertex target) {
@@ -17,7 +17,7 @@ public class SEdge
 	{
 		return this.target;
 	}
-	public double getLen()
+	double getLen()
 	{
 		return this.len;
 	}
