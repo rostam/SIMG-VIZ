@@ -5,7 +5,6 @@ import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.io.LocalCollectionOutputFormat;
-import org.apache.flink.util.Collector;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -114,23 +113,17 @@ public class RequestHandler {
     public Response clusterIds(@PathParam("databaseName") String databaseName) throws Exception {
         JSONArray json = new JSONArray();
         LogicalGraph g = readGraph(databaseName, databaseName.split("--"));
-        List<String> clusterids = g.getVertices().map(new MapFunction<Vertex, String>() {
-            @Override
-            public String map(Vertex vertex) throws Exception {
-                if(vertex.hasProperty("ClusterId"))
-                    return vertex.getPropertyValue("ClusterId").toString();
-                else return vertex.getLabel();
-            }
-        }).flatMap(new FlatMapFunction<String, String>() {
-            @Override
-            public void flatMap(String s, Collector<String> collector) throws Exception {
-                if(s.contains(",")) {
-                    String[] splittedArray = s.split(",");
-                    for (String splitted : splittedArray)
-                        collector.collect(splitted);
-                } else {
-                    collector.collect(s);
-                }
+        List<String> clusterids = g.getVertices().map((MapFunction<Vertex, String>) vertex -> {
+            if(vertex.hasProperty("ClusterId"))
+                return vertex.getPropertyValue("ClusterId").toString();
+            else return vertex.getLabel();
+        }).flatMap((FlatMapFunction<String, String>) (s, collector) -> {
+            if(s.contains(",")) {
+                String[] splittedArray = s.split(",");
+                for (String splitted : splittedArray)
+                    collector.collect(splitted);
+            } else {
+                collector.collect(s);
             }
         }).distinct().collect();
         for(String s : clusterids)

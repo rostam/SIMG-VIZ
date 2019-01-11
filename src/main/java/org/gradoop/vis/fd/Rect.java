@@ -44,7 +44,7 @@ public class Rect
 		this.h = h;
 	}
 
-	public double getRight()
+	double getRight()
 	{
 		return this.x + this.w;
 	}
@@ -54,7 +54,7 @@ public class Rect
 		return this.y + this.h;
 	}
 	
-	public boolean intersects(Rect a)
+	boolean intersects(Rect a)
 	{
 		if (this.getRight() < a.x)
 			return false;
@@ -71,10 +71,10 @@ public class Rect
 		return true;
 	}
 	
-	public double centerX()
+	double centerX()
 	{
 		return this.x + this.w / 2;
 	}
 	
-	public double centerY() { return this.y + this.h / 2; }
+	double centerY() { return this.y + this.h / 2; }
 }
