@@ -16,6 +16,8 @@ import org.gradoop.flink.io.api.DataSource;
 import org.gradoop.flink.io.impl.csv.CSVDataSource;
 import org.gradoop.flink.io.impl.deprecated.json.JSONDataSource;
 import org.gradoop.flink.model.impl.epgm.LogicalGraph;
+import org.gradoop.flink.model.impl.operators.aggregation.functions.count.EdgeCount;
+import org.gradoop.flink.model.impl.operators.aggregation.functions.count.VertexCount;
 import org.gradoop.flink.util.GradoopFlinkConfig;
 import org.gradoop.vis.cluster.FilterACluster;
 import org.gradoop.vis.cluster.FilterAClusterAndItsNeighbors;
@@ -115,7 +117,7 @@ public class RequestHandler {
         JSONObject jsonObject = new JSONObject();
         JSONArray json = new JSONArray();
         LogicalGraph g = readGraph(databaseName, databaseName.split("--"));
-
+        g = g.aggregate(new VertexCount(),new EdgeCount());
         List<String> clusterids = g.getVertices().map(new MapFunction<Vertex, String>() {
             @Override
             public String map(Vertex vertex) throws Exception {
@@ -140,8 +142,10 @@ public class RequestHandler {
 
         jsonObject.put("clusterids", json);
 
-        long numOfV = g.getVertices().count();
-        long numOfE = g.getEdges().count();
+        List<GraphHead> ls = g.getGraphHead().collect();
+        long numOfV = Long.parseLong(ls.get(0).getPropertyValue("vertexCount").toString());
+        long numOfE = Long.parseLong(ls.get(0).getPropertyValue("vertexCount").toString());
+//        new Count
 
         jsonObject.put("NumOfV", numOfV);
         jsonObject.put("NumOfE", numOfE);

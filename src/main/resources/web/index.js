@@ -23,7 +23,7 @@ function fillMenus(databases) {
             //     clusteridMenu.append('<option>' + d + '</option>');
             // });
 
-            // autocomplete(document.getElementById("ClusterId"), data);
+            autocomplete(document.getElementById("ClusterId"), data);
 
             document.getElementById("NumOfV").innerHTML = recv_data.NumOfV;
             document.getElementById("NumOfE").innerHTML = recv_data.NumOfE;
