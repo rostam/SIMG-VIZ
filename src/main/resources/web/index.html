@@ -29,9 +29,28 @@
         <label for="Graph">Graph:</label>
         <select id="Graph" value="Center"></select>
     </div>
+    <!--<div class="w3-bar-item">-->
+    <!--<label for="ClusterId">Cluster Id:</label>-->
+    <!--<input id="ClusterId"></input><br/>-->
+    <!--</div>-->
     <div class="w3-bar-item">
         <label for="ClusterId">Cluster Id:</label>
-        <select id="ClusterId" value="88"></select><br/>
+        <div class="autocomplete" style="width:300px;">
+            <input id="ClusterId" type="text" name="myclusterid" placeholder="" style="border: 1px solid">
+        </div>
+    </div>
+
+    <div class="w3-bar-item">
+        <label for="NumOfV">Number of vertices:</label>
+        <span id="NumOfV"></span><br/>
+    </div>
+    <div class="w3-bar-item">
+        <label for="NumOfE">Number of edges:</label>
+        <span id="NumOfE" value="88"></span><br/>
+    </div>
+    <div class="w3-bar-item">
+        <label for="NumOfC">Number of clusters:</label>
+        <span id="NumOfC" value="88"></span><br/>
     </div>
     <div class="w3-bar-item">
 
@@ -59,6 +78,7 @@
 </div>
 <div id="canvas"></div>
 <script src="cytoscape-related.js"></script>
+<script src="autocomplete.js">s</script>
 <script src="index.js"></script>
 </body>
 </html>

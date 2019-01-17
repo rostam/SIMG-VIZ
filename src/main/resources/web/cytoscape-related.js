@@ -320,7 +320,6 @@ function drawGraph(data, finish) {
     }
     addQtip();
     cy.layout(chooseLayout());
-
     if (cy.nodes().length != 0) {
         if (cy.nodes()[0].data("properties")["ClusterId"] != null) {
             var clusteridsselect = $('#clusterids');

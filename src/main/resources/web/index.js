@@ -16,11 +16,18 @@ function fillMenus(databases) {
         var graph = getSelected("Graph");
         var cat = getSelected("Category");
         $('#loading').show();
-        $.post(serverAddr + 'clusterids/' + cat + "--" + graph).done(function (data) {
+        $.post(serverAddr + 'clusterids/' + cat + "--" + graph).done(function (recv_data) {
             var clusteridMenu = $('#ClusterId');
-            data.forEach(function (d) {
-                clusteridMenu.append('<option>' + d + '</option>');
-            });
+            let data = recv_data.clusterids;
+            // data.forEach(function (d) {
+            //     clusteridMenu.append('<option>' + d + '</option>');
+            // });
+
+            autocomplete(document.getElementById("ClusterId"), data);
+
+            document.getElementById("NumOfV").innerHTML = recv_data.NumOfV;
+            document.getElementById("NumOfE").innerHTML = recv_data.NumOfE;
+            document.getElementById("NumOfC").innerHTML = data.length;
             $('#loading').hide();
         });
     });
@@ -50,7 +57,7 @@ $(document).ready(function () {
     document.getElementById("go").onclick = function () {
         var cat = getSelected("Category");
         var graph = getSelected("Graph");
-        var cid = getSelected("ClusterId");
+        var cid = document.getElementById("ClusterId").value;
         $('#loading').show();
         $.post(serverAddr + 'clusterandns/' + cat + "--" + graph + "--" + cid).done(function (data) {
             drawGraph(data, function () {
@@ -63,7 +70,7 @@ $(document).ready(function () {
     document.getElementById("go-only-cluster").onclick = function () {
         var cat = getSelected("Category");
         var graph = getSelected("Graph");
-        var cid = getSelected("ClusterId");
+        var cid = document.getElementById("ClusterId").value;
         $('#loading').show();
         $.post(serverAddr + 'cluster/' + cat + "--" + graph + "--" + cid).done(function (data) {
             drawGraph(data, function () {
