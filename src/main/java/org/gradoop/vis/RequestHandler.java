@@ -145,8 +145,6 @@ public class RequestHandler {
         List<GraphHead> ls = g.getGraphHead().collect();
         long numOfV = Long.parseLong(ls.get(0).getPropertyValue("vertexCount").toString());
         long numOfE = Long.parseLong(ls.get(0).getPropertyValue("vertexCount").toString());
-//        new Count
-
         jsonObject.put("NumOfV", numOfV);
         jsonObject.put("NumOfE", numOfE);
 
