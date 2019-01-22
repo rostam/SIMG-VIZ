@@ -53,13 +53,19 @@
         <span id="NumOfC" value="88"></span><br/>
     </div>
     <div class="w3-bar-item">
-
-        <button class="w3-button w3-border" id="go-only-cluster">Show Cluster</button>
+        <label for="Action">Action:</label>
+        <select id="Action">
+            <option>Show Cluster</option>
+            <option>Show Cluster and its Neighbors</option>
+            <option>Show Cluster Incremental</option>
+            <option>Animate Incremental</option>
+        </select>
     </div>
     <div class="w3-bar-item">
-        <button class="w3-button w3-border" id="go">Show Cluster and its Neighbors</button>
+        <button class="w3-button w3-border" id="go" onclick="action()">Go!</button>
     </div>
 
+    <hr>
     <div class="w3-bar-item">
         <label for="ShowVertexLabels">Show Vertex Labels:</label>
         <select id="ShowVertexLabels">

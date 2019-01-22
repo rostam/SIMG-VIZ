@@ -54,10 +54,25 @@ $(document).ready(function () {
         .fail(function (jqXHR, textStatus, errorThrown) {
             alert(errorThrown);
         });
-    document.getElementById("go").onclick = function () {
-        var cat = getSelected("Category");
-        var graph = getSelected("Graph");
-        var cid = document.getElementById("ClusterId").value;
+
+    $("#ShowVertexLabels").on('change', function () {
+        var showVLabels = getSelected("ShowVertexLabels");
+        if (showVLabels == 'no') cy.nodes().style('label', '');
+    });
+
+    $("#ShowEdgeLabels").on('change', function () {
+        var showVLabels = getSelected("ShowEdgeLabels");
+        if (showVLabels == 'no') cy.edges().style('label', '');
+    });
+
+});
+
+function action() {
+    var selectedAction = getSelected("Action");
+    var cat = getSelected("Category");
+    var graph = getSelected("Graph");
+    var cid = document.getElementById("ClusterId").value;
+    if (selectedAction == "Show Cluster and its Neighbors") {
         $('#loading').show();
         $.post(serverAddr + 'clusterandns/' + cat + "--" + graph + "--" + cid).done(function (data) {
             drawGraph(data, function () {
@@ -65,12 +80,9 @@ $(document).ready(function () {
             });
             $('#loading').hide();
         });
-    };
+    }
 
-    document.getElementById("go-only-cluster").onclick = function () {
-        var cat = getSelected("Category");
-        var graph = getSelected("Graph");
-        var cid = document.getElementById("ClusterId").value;
+    if (selectedAction == "Show Cluster") {
         $('#loading').show();
         $.post(serverAddr + 'cluster/' + cat + "--" + graph + "--" + cid).done(function (data) {
             drawGraph(data, function () {
@@ -78,19 +90,23 @@ $(document).ready(function () {
             });
             $('#loading').hide();
         });
-    };
+    }
 
-    $("#ShowVertexLabels").on('change',function () {
-       var showVLabels = getSelected("ShowVertexLabels");
-       if(showVLabels == 'no') cy.nodes().style('label','');
-    });
+    if (selectedAction == "Show Cluster Incremental") {
+        $('#loading').show();
+        $.post(serverAddr + 'cluster_incremental/' + cat + "--" + graph + "--" + cid).done(function (data) {
 
-    $("#ShowEdgeLabels").on('change',function () {
-        var showVLabels = getSelected("ShowEdgeLabels");
-        if(showVLabels == 'no') cy.edges().style('label','');
-    });
+        });
 
-});
+    }
+
+    if (selectedAction == "Animate Incremental") {
+        $('#loading').show();
+        $.post(serverAddr + 'animation/' + cat + "--" + graph + "--" + cid).done(function (data) {
+
+        });
+    }
+}
 
 
 

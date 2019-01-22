@@ -61,6 +61,35 @@ public class RequestHandler {
     }
 
     @POST
+    @Path("/cluster_incremental/{databaseName}")
+    @Produces("application/json;charset=utf-8")
+    public Response clusterIncremental(@PathParam("databaseName") String databaseName) throws Exception {
+        String[] data = databaseName.split("--");
+        String dataPath = RequestHandler.class.getResource("/data/").getPath().toString();
+        LogicalGraph g = new JSONDataSource(dataPath + data[0] + "/" + data[1], gfc).getLogicalGraph();
+        g = new FilterAClusterAndItsNeighbors(data[2]).execute(g);
+        g.getVertices().map(new MapFunction<Vertex, Vertex>() {
+            @Override
+            public Vertex map(Vertex vertex) {
+                int inc = Integer.parseInt(vertex.getPropertyValue("inc").toString());
+                vertex.setProperty("posx", inc*100);
+                vertex.setProperty("posy", Math.random() * 800);
+                return vertex;
+            }
+        });
+        List<GraphHead> ghead = new ArrayList<>();
+        List<Vertex> lv = new ArrayList<>();
+        List<Edge> le = new ArrayList<>();
+        g.getGraphHead().output(new LocalCollectionOutputFormat<>(ghead));
+        g.getVertices().output(new LocalCollectionOutputFormat<>(lv));
+        g.getEdges().output(new LocalCollectionOutputFormat<>(le));
+        env.execute();
+        new ToSGraph(lv,le).forceDirectedCluster(100);
+        String json = CytoJSONBuilder.getJSON(ghead.get(0), lv, le);
+        return Response.ok(json).header("Access-Control-Allow-Origin", "*").build();
+    }
+
+    @POST
     @Path("/cluster/{databaseName}")
     @Produces("application/json;charset=utf-8")
     public Response cluster(@PathParam("databaseName") String databaseName) throws Exception {
