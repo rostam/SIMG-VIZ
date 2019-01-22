@@ -34,7 +34,6 @@ function fillMenus(databases) {
 }
 
 function initializeGraphsMenu(databases) {
-    console.log(databases);
     var categoriesSelect = $('#Category');
     Object.keys(databases).forEach(function (d) {
         categoriesSelect.append('<option>' + d + '</option>');
@@ -95,7 +94,10 @@ function action() {
     if (selectedAction == "Show Cluster Incremental") {
         $('#loading').show();
         $.post(serverAddr + 'cluster_incremental/' + cat + "--" + graph + "--" + cid).done(function (data) {
-
+            drawGraph(data, function () {
+                cy.fit(cy.elements(), 40)
+            });
+            $('#loading').hide();
         });
 
     }

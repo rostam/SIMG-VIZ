@@ -3,6 +3,7 @@ package org.gradoop.vis;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.io.LocalCollectionOutputFormat;
 import org.apache.flink.util.Collector;
@@ -68,15 +69,16 @@ public class RequestHandler {
         String dataPath = RequestHandler.class.getResource("/data/").getPath().toString();
         LogicalGraph g = new JSONDataSource(dataPath + data[0] + "/" + data[1], gfc).getLogicalGraph();
         g = new FilterAClusterAndItsNeighbors(data[2]).execute(g);
-        g.getVertices().map(new MapFunction<Vertex, Vertex>() {
+        DataSet<Vertex> ds = g.getVertices().map(new MapFunction<Vertex, Vertex>() {
             @Override
             public Vertex map(Vertex vertex) {
                 int inc = Integer.parseInt(vertex.getPropertyValue("inc").toString());
-                vertex.setProperty("posx", inc*100);
-                vertex.setProperty("posy", Math.random() * 800);
+                String position = (inc*200)  + "," + (Math.random()*900);
+                vertex.setProperty("position", position);
                 return vertex;
             }
         });
+        g = g.getConfig().getLogicalGraphFactory().fromDataSets(ds, g.getEdges());
         List<GraphHead> ghead = new ArrayList<>();
         List<Vertex> lv = new ArrayList<>();
         List<Edge> le = new ArrayList<>();
@@ -84,7 +86,7 @@ public class RequestHandler {
         g.getVertices().output(new LocalCollectionOutputFormat<>(lv));
         g.getEdges().output(new LocalCollectionOutputFormat<>(le));
         env.execute();
-        new ToSGraph(lv,le).forceDirectedCluster(100);
+        new ToSGraph(lv,le).setColorsToClusters(0);
         String json = CytoJSONBuilder.getJSON(ghead.get(0), lv, le);
         return Response.ok(json).header("Access-Control-Allow-Origin", "*").build();
     }

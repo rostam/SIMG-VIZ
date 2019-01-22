@@ -118,20 +118,41 @@ public class ToSGraph {
             if (!n.label.equals("parent")) {
                 Vertex v = hm2.get(GradoopId.fromString(n.label));
                 v.setProperty("position", n.rect.x + "," + n.rect.y);
-                String ClusterId = v.getPropertyValue("ClusterId").toString();
-                if (ClusterId.contains(",")) {
-                    String[] clusterIds = ClusterId.split(",");
-                    String property = "";
-                    for (String clusterId : clusterIds) {
-                        property += clusterIdToColor.get(clusterId) + ",";
-                    }
-                    property = property.substring(0, property.length() - 1);
-                    v.setProperty("color", property);
-                } else {
-                    //ClusterId = ClusterId.substring(0,ClusterId.indexOf(","));
-                    v.setProperty("color", clusterIdToColor.get(ClusterId));
-                }
+                ClusterColorExtractor(clusterIdToColor, v);
             }
+        }
+    }
+
+    public void setColorsToClusters(int maxIter) {
+        Vector<String> uniqueCID = unqiueClusterIds(vertices);
+        Layout layout = new Layout();
+        HashMap<String, SGraph> ClusterIdToChildGraph = new HashMap<>();
+        HashMap<String, String> clusterIdToColor = new HashMap<>();
+        int i = 0;
+        for (String id : uniqueCID) {
+            if (i >= DistinctColors.indexcolors.length) i = 0;
+            clusterIdToColor.put(id, DistinctColors.indexcolors[i]);
+            i++;
+        }
+
+        for (Vertex v : vertices) {
+            ClusterColorExtractor(clusterIdToColor, v);
+        }
+    }
+
+    private void ClusterColorExtractor(HashMap<String, String> clusterIdToColor, Vertex v) {
+        String ClusterId = v.getPropertyValue("ClusterId").toString();
+        if (ClusterId.contains(",")) {
+            String[] clusterIds = ClusterId.split(",");
+            String property = "";
+            for (String clusterId : clusterIds) {
+                property += clusterIdToColor.get(clusterId) + ",";
+            }
+            property = property.substring(0, property.length() - 1);
+            v.setProperty("color", property);
+        } else {
+            //ClusterId = ClusterId.substring(0,ClusterId.indexOf(","));
+            v.setProperty("color", clusterIdToColor.get(ClusterId));
         }
     }
 }
