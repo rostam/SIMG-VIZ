@@ -64,8 +64,32 @@ $(document).ready(function () {
         if (showVLabels == 'no') cy.edges().style('label', '');
     });
 
+    $("#ColorEdgesOptions").on('change', function () {
+        var showVLabels = getSelected("ColorEdgesOptions");
+        if (showVLabels == 'Cluster value') {
+            cy.edges().forEach(function (edge) {
+                if (edge.data('properties')['IsCorrect'] != null) {
+                    if (edge.data('properties')['IsMissing'] == "true") {
+                        edge.style('line-color', 'black');
+                        return;
+                    } else if (edge.data('properties')['IsCorrect'] == "true") {
+                        edge.style('line-color', 'forestgreen');
+                        return;
+                    } else {
+                        edge.style('line-color', 'forestgreen');
+                        return;
+                    }
+                }
+                edge.style('line-color', '#999');
+                return;
+            });
+        } else if (showVLabels == 'Incremental') {
+            cy.edges().forEach(function (e) {
+                e.style("line-color",e.data().properties.ColorIncremental);
+            });
+        }
+    });
 });
-
 function action() {
     var selectedAction = getSelected("Action");
     var cat = getSelected("Category");
@@ -75,7 +99,7 @@ function action() {
         $('#loading').show();
         $.post(serverAddr + 'clusterandns/' + cat + "--" + graph + "--" + cid).done(function (data) {
             drawGraph(data, function () {
-                cy.fit(cy.elements(), 40)
+                cy.fit(cy.elements(), 40);
             });
             $('#loading').hide();
         });
@@ -85,7 +109,7 @@ function action() {
         $('#loading').show();
         $.post(serverAddr + 'cluster/' + cat + "--" + graph + "--" + cid).done(function (data) {
             drawGraph(data, function () {
-                cy.fit(cy.elements(), 40)
+                cy.fit(cy.elements(), 40);
             });
             $('#loading').hide();
         });
@@ -95,17 +119,20 @@ function action() {
         $('#loading').show();
         $.post(serverAddr + 'cluster_incremental/' + cat + "--" + graph + "--" + cid).done(function (data) {
             drawGraph(data, function () {
-                cy.fit(cy.elements(), 40)
+                cy.fit(cy.elements(), 40);
             });
             $('#loading').hide();
         });
 
     }
 
-    if (selectedAction == "Animate Incremental") {
+    if (selectedAction == "Show Full Incremental") {
         $('#loading').show();
-        $.post(serverAddr + 'animation/' + cat + "--" + graph + "--" + cid).done(function (data) {
-
+        $.post(serverAddr + 'full/' + cat + "--" + graph + "--" + cid).done(function (data) {
+            drawGraph(data, function () {
+                cy.fit(cy.elements(), 40);
+            });
+            $('#loading').hide();
         });
     }
 }

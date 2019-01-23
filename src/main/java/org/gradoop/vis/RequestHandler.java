@@ -19,6 +19,7 @@ import org.gradoop.flink.io.impl.deprecated.json.JSONDataSource;
 import org.gradoop.flink.model.impl.epgm.LogicalGraph;
 import org.gradoop.flink.model.impl.operators.aggregation.functions.count.EdgeCount;
 import org.gradoop.flink.model.impl.operators.aggregation.functions.count.VertexCount;
+import org.gradoop.flink.model.impl.operators.sampling.RandomVertexSampling;
 import org.gradoop.flink.util.GradoopFlinkConfig;
 import org.gradoop.vis.cluster.FilterACluster;
 import org.gradoop.vis.cluster.FilterAClusterAndItsNeighbors;
@@ -56,7 +57,7 @@ public class RequestHandler {
         g.getVertices().output(new LocalCollectionOutputFormat<>(lv));
         g.getEdges().output(new LocalCollectionOutputFormat<>(le));
         env.execute();
-        new ToSGraph(lv,le).forceDirectedCluster(100);
+        new ToSGraph(lv, le).forceDirectedCluster(100);
         String json = CytoJSONBuilder.getJSON(ghead.get(0), lv, le);
         return Response.ok(json).header("Access-Control-Allow-Origin", "*").build();
     }
@@ -68,17 +69,26 @@ public class RequestHandler {
         String[] data = databaseName.split("--");
         String dataPath = RequestHandler.class.getResource("/data/").getPath().toString();
         LogicalGraph g = new JSONDataSource(dataPath + data[0] + "/" + data[1], gfc).getLogicalGraph();
-        g = new FilterAClusterAndItsNeighbors(data[2]).execute(g);
+//        g = new FilterAClusterAndItsNeighbors(data[2]).execute(g);
+        g = g.sample(new RandomVertexSampling(0.7f));
         DataSet<Vertex> ds = g.getVertices().map(new MapFunction<Vertex, Vertex>() {
             @Override
             public Vertex map(Vertex vertex) {
                 int inc = Integer.parseInt(vertex.getPropertyValue("inc").toString());
-                String position = (inc*200)  + "," + (Math.random()*900);
+                String position = (inc * 600 + Math.random() * 150) + "," + (Math.random() * 900);
                 vertex.setProperty("position", position);
                 return vertex;
             }
         });
-        g = g.getConfig().getLogicalGraphFactory().fromDataSets(ds, g.getEdges());
+        DataSet<Edge> es = g.getEdges().map(new MapFunction<Edge, Edge>() {
+            @Override
+            public Edge map(Edge edge) throws Exception {
+                int intCol = Integer.parseInt(edge.getPropertyValue("inc").toString());
+                edge.setProperty("ColorIncremental", DistinctColors.indexcolors[intCol]);
+                return edge;
+            }
+        });
+        g = g.getConfig().getLogicalGraphFactory().fromDataSets(ds, es);
         List<GraphHead> ghead = new ArrayList<>();
         List<Vertex> lv = new ArrayList<>();
         List<Edge> le = new ArrayList<>();
@@ -86,7 +96,45 @@ public class RequestHandler {
         g.getVertices().output(new LocalCollectionOutputFormat<>(lv));
         g.getEdges().output(new LocalCollectionOutputFormat<>(le));
         env.execute();
-        new ToSGraph(lv,le).setColorsToClusters(0);
+        new ToSGraph(lv, le).setColorsToClusters(0);
+        String json = CytoJSONBuilder.getJSON(ghead.get(0), lv, le);
+        return Response.ok(json).header("Access-Control-Allow-Origin", "*").build();
+    }
+
+    @POST
+    @Path("/full/{databaseName}")
+    @Produces("application/json;charset=utf-8")
+    public Response full(@PathParam("databaseName") String databaseName) throws Exception {
+        String[] data = databaseName.split("--");
+        String dataPath = RequestHandler.class.getResource("/data/").getPath().toString();
+        LogicalGraph g = new JSONDataSource(dataPath + data[0] + "/" + data[1], gfc).getLogicalGraph();
+        g = new FilterAClusterAndItsNeighbors(data[2]).execute(g);
+        DataSet<Vertex> ds = g.getVertices().map(new MapFunction<Vertex, Vertex>() {
+            @Override
+            public Vertex map(Vertex vertex) {
+                int inc = Integer.parseInt(vertex.getPropertyValue("inc").toString());
+                String position = (inc * 600 + Math.random() * 150) + "," + (Math.random() * 900);
+                vertex.setProperty("position", position);
+                return vertex;
+            }
+        });
+        DataSet<Edge> es = g.getEdges().map(new MapFunction<Edge, Edge>() {
+            @Override
+            public Edge map(Edge edge) throws Exception {
+                int intCol = Integer.parseInt(edge.getPropertyValue("inc").toString());
+                edge.setProperty("ColorIncremental", DistinctColors.indexcolors[intCol]);
+                return edge;
+            }
+        });
+        g = g.getConfig().getLogicalGraphFactory().fromDataSets(ds, es);
+        List<GraphHead> ghead = new ArrayList<>();
+        List<Vertex> lv = new ArrayList<>();
+        List<Edge> le = new ArrayList<>();
+        g.getGraphHead().output(new LocalCollectionOutputFormat<>(ghead));
+        g.getVertices().output(new LocalCollectionOutputFormat<>(lv));
+        g.getEdges().output(new LocalCollectionOutputFormat<>(le));
+        env.execute();
+        new ToSGraph(lv, le).setColorsToClusters(0);
         String json = CytoJSONBuilder.getJSON(ghead.get(0), lv, le);
         return Response.ok(json).header("Access-Control-Allow-Origin", "*").build();
     }
@@ -106,7 +154,7 @@ public class RequestHandler {
         g.getVertices().output(new LocalCollectionOutputFormat<>(lv));
         g.getEdges().output(new LocalCollectionOutputFormat<>(le));
         env.execute();
-        new ToSGraph(lv,le).forceDirectedCluster(100);
+        new ToSGraph(lv, le).forceDirectedCluster(100);
         String json = CytoJSONBuilder.getJSON(ghead.get(0), lv, le);
         return Response.ok(json).header("Access-Control-Allow-Origin", "*").build();
     }
@@ -148,18 +196,18 @@ public class RequestHandler {
         JSONObject jsonObject = new JSONObject();
         JSONArray json = new JSONArray();
         LogicalGraph g = readGraph(databaseName, databaseName.split("--"));
-        g = g.aggregate(new VertexCount(),new EdgeCount());
+        g = g.aggregate(new VertexCount(), new EdgeCount());
         List<String> clusterids = g.getVertices().map(new MapFunction<Vertex, String>() {
             @Override
             public String map(Vertex vertex) throws Exception {
-                if(vertex.hasProperty("ClusterId"))
+                if (vertex.hasProperty("ClusterId"))
                     return vertex.getPropertyValue("ClusterId").toString();
                 else return vertex.getLabel();
             }
         }).flatMap(new FlatMapFunction<String, String>() {
             @Override
             public void flatMap(String s, Collector<String> collector) throws Exception {
-                if(s.contains(",")) {
+                if (s.contains(",")) {
                     String[] splittedArray = s.split(",");
                     for (String splitted : splittedArray)
                         collector.collect(splitted);
@@ -168,7 +216,7 @@ public class RequestHandler {
                 }
             }
         }).distinct().collect();
-        for(String s : clusterids)
+        for (String s : clusterids)
             json.put(s);
 
         jsonObject.put("clusterids", json);
