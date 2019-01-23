@@ -524,6 +524,7 @@ function chooseLayout() {
     // }
 }
 
+
 cy = buildCytoscape();
 
 var fade = false;

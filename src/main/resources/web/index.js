@@ -129,9 +129,44 @@ function action() {
     if (selectedAction == "Show Full Incremental") {
         $('#loading').show();
         $.post(serverAddr + 'full/' + cat + "--" + graph + "--" + cid).done(function (data) {
-            drawGraph(data, function () {
-                cy.fit(cy.elements(), 40);
+            cy2 = cytoscape({
+                container: document.getElementById('canvas'),
+                style: cytoscape.stylesheet()
+                    .selector('node')
+                    .css({
+                        'background-color': function (node) {
+                            var col = node.data('properties')['color'];
+                            if (col.indexOf(",") == -1) return col;
+                            else {
+                                return col.substring(0, col.indexOf(","));
+                            }
+                        },
+                        'width' : '8px',
+                        'height' : '8px'
+                    })
+                    .selector('edge')
+                    .css({
+                        'opacity': 0.5,
+                        'line-color': function (e) {
+                            return e.data().properties.ColorIncremental;
+                        },
+                        'width' : '1px'
+
+                    })
             });
+            var nodes = data.nodes;
+            var edges = data.edges;
+            cy.elements().remove();
+            cy2.elements().remove();
+            cy2.add(nodes);
+            cy2.add(edges);
+            cy2.layout({name:"preset"});
+            cy2.fit(cy2.elements(), 5);
+            // drawGraph(data, function () {
+            //     cy.nodes().style("width","10px");
+            //     cy.nodes().style("height","10px");
+            //     cy.fit(cy.elements(), 40);
+            // });
             $('#loading').hide();
         });
     }

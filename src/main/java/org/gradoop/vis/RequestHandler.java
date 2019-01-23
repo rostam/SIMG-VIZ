@@ -1,6 +1,7 @@
 package org.gradoop.vis;
 
 
+import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
@@ -13,6 +14,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.gradoop.common.model.impl.pojo.Edge;
 import org.gradoop.common.model.impl.pojo.GraphHead;
 import org.gradoop.common.model.impl.pojo.Vertex;
+import org.gradoop.flink.algorithms.gelly.vertexdegrees.DistinctVertexDegrees;
 import org.gradoop.flink.io.api.DataSource;
 import org.gradoop.flink.io.impl.csv.CSVDataSource;
 import org.gradoop.flink.io.impl.deprecated.json.JSONDataSource;
@@ -20,6 +22,7 @@ import org.gradoop.flink.model.impl.epgm.LogicalGraph;
 import org.gradoop.flink.model.impl.operators.aggregation.functions.count.EdgeCount;
 import org.gradoop.flink.model.impl.operators.aggregation.functions.count.VertexCount;
 import org.gradoop.flink.model.impl.operators.sampling.RandomVertexSampling;
+import org.gradoop.flink.model.impl.operators.sampling.functions.VertexDegree;
 import org.gradoop.flink.util.GradoopFlinkConfig;
 import org.gradoop.vis.cluster.FilterACluster;
 import org.gradoop.vis.cluster.FilterAClusterAndItsNeighbors;
@@ -63,19 +66,25 @@ public class RequestHandler {
     }
 
     @POST
-    @Path("/cluster_incremental/{databaseName}")
+    @Path("/full/{databaseName}")
     @Produces("application/json;charset=utf-8")
-    public Response clusterIncremental(@PathParam("databaseName") String databaseName) throws Exception {
+    public Response full(@PathParam("databaseName") String databaseName) throws Exception {
         String[] data = databaseName.split("--");
         String dataPath = RequestHandler.class.getResource("/data/").getPath().toString();
         LogicalGraph g = new JSONDataSource(dataPath + data[0] + "/" + data[1], gfc).getLogicalGraph();
 //        g = new FilterAClusterAndItsNeighbors(data[2]).execute(g);
-        g = g.sample(new RandomVertexSampling(0.7f));
-        DataSet<Vertex> ds = g.getVertices().map(new MapFunction<Vertex, Vertex>() {
+//        g = g.sample(new RandomVertexSampling(0.9f));
+        g = (new DistinctVertexDegrees("deg", "indeg", "outdeg", true)).execute(g);
+        DataSet<Vertex> ds = g.getVertices().filter(new FilterFunction<Vertex>() {
+            @Override
+            public boolean filter(Vertex vertex) throws Exception {
+                return Integer.parseInt(vertex.getPropertyValue("deg").toString()) > 0;
+            }
+        }).map(new MapFunction<Vertex, Vertex>() {
             @Override
             public Vertex map(Vertex vertex) {
                 int inc = Integer.parseInt(vertex.getPropertyValue("inc").toString());
-                String position = (inc * 600 + Math.random() * 150) + "," + (Math.random() * 900);
+                String position = (inc * 600 + Math.random() * 250) + "," + (Math.random() * 1000);
                 vertex.setProperty("position", position);
                 return vertex;
             }
@@ -102,9 +111,9 @@ public class RequestHandler {
     }
 
     @POST
-    @Path("/full/{databaseName}")
+    @Path("/cluster_incremental/{databaseName}")
     @Produces("application/json;charset=utf-8")
-    public Response full(@PathParam("databaseName") String databaseName) throws Exception {
+    public Response clusterIncremental(@PathParam("databaseName") String databaseName) throws Exception {
         String[] data = databaseName.split("--");
         String dataPath = RequestHandler.class.getResource("/data/").getPath().toString();
         LogicalGraph g = new JSONDataSource(dataPath + data[0] + "/" + data[1], gfc).getLogicalGraph();
